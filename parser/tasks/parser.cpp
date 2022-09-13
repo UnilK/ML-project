@@ -1869,11 +1869,6 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
 
     unsigned step = 128;
 
-    auto sinc = [](float x){
-        if(std::abs(x) < 1e-5) return 1.0f;
-        return std::sin(x*PIF) / (x*PIF);
-    };
-
     auto convert = [&](std::vector<std::complex<float>> in, float pitch) -> std::vector<float> {
 
         const float p = 60.0f;
@@ -1889,7 +1884,7 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
             assert(j+1 < (int)in.size());
             assert(std::abs(l+r-1.0f) < 1e-5);
             
-            out[i-1] = std::abs(in[j])*sinc(l) + std::abs(in[j+1])*sinc(r);
+            out[i-1] = std::abs(in[j])*r + std::abs(in[j+1])*l;
         }
 
         return out;
