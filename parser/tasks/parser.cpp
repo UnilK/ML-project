@@ -1843,6 +1843,9 @@ std::mt19937 rng32(std::chrono::steady_clock::now().time_since_epoch().count());
 
 int parse_to_csv(std::string directory, std::string output, unsigned N){
 
+    using std::vector;
+    using std::complex;
+
     auto iswave = [](std::string &s) -> bool {
         if(s.size() < 4) return 0;
         return s.substr(s.size()-4) == ".wav";
@@ -1868,37 +1871,45 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
 
     unsigned step = 128;
 
-    auto convert = [&](std::vector<std::complex<float>> in, float pitch) -> std::vector<float> {
+    auto to_energy = [&](const vector<complex<float>> &in) -> vector<float> {
 
-        const float p = 60.0f;
-
-        std::vector<float> out(100);
-
-        for(int i=1, j=0; i<=100; i++){
-            
-            while((j+1)*pitch < i*p) j++;
-            float l = (i*p - j*pitch)/pitch;
-            float r = ((j+1)*pitch - i*p)/pitch;
-            
-            assert(j+1 < (int)in.size());
-            assert(std::abs(l+r-1.0f) < 1e-5);
-            
-            out[i-1] = std::abs(in[j])*r + std::abs(in[j+1])*l;
-        }
+        vector<float> out;
+        for(auto i : in) out.push_back(i.real()*i.real()+i.imag()*i.imag());
 
         return out;
     };
 
-    auto normalize_energy = [](std::vector<float> &f){
+    auto sinc = [](float x) -> float {
+        if(std::abs(x) < 1e-5) return 1.0f;
+        return std::sin(x*M_PI) / (x*M_PI);
+    };
 
-        const float norm = 10.0f;
+    auto sinc2 = [&](float x) -> float {
+        if(std::abs(x) > 3) return 0.0f;
+        float y = sinc(x);
+        return y*y;
+    };
+    
+    auto interpolate_and_normalize = [&](vector<float> in, float pitch) -> vector<float> {
+
+        const float p = 60.0f;
+        vector<float> out(100, 0.0f);
+
+        for(int i=0; i<100; i++){
+            for(int j=0; j<(int)in.size(); j++){
+                out[i] += sinc2(((i+1)*p-j*pitch)/pitch) * in[j];
+            }
+        }
 
         float sum = 0.0f;
-        for(int i=0; i<100; i++) sum += f[i]*f[i]*(i+1)*(i+1);
-    
-        float mul = norm / sum;
+        for(float i : out) sum += i;
 
-        for(float &i : f) i *= mul;
+        const float norm = 10.0f;
+        sum = norm / sum;
+
+        for(float &i : out) i *= sum;
+
+        return out;
     };
 
     auto get_label = [](std::string s) -> std::string {
@@ -1915,9 +1926,9 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
         if(!I.open(f)) continue;
 
         change::Detector detector;
-        std::vector<float> samples(step);
+        vector<float> samples(step);
 
-        std::vector<std::vector<float> > all;
+        vector<std::pair<vector<float>, float> > all;
 
         while(I.read_move(samples.data(), step) == step){
             
@@ -1927,9 +1938,9 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
                 
                 unsigned num = (unsigned)std::ceil(6000.0f / detector.pitch);
 
-                auto freq = math::cos_window_ft(detector.get2(), num+2, 1);
+                auto freq = math::cos_window_ft(detector.get2(), num);
                 
-                all.push_back(convert(freq, detector.pitch));
+                all.push_back({to_energy(freq), detector.pitch});
             }
         }
 
@@ -1940,9 +1951,9 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
         auto label = get_label(f);
 
         for(unsigned i=0; i<N; i++){
-            normalize_energy(all[i]);
-            for(int j=0; j<99; j++) spectrums << all[i][j] << ',';
-            spectrums << all[i][99] << '\n';
+            auto out = interpolate_and_normalize(all[i].first, all[i].second);
+            for(int j=0; j<99; j++) spectrums << out[j] << ',';
+            spectrums << out[99] << '\n';
             labels << label << '\n';
         }
 
