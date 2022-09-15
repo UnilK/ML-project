@@ -1894,12 +1894,38 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
 
         const float p = 60.0f;
         vector<float> out(100, 0.0f);
+   
+        assert(in.size()*pitch >= 6000.0f);
+
+        // amplitude
+
+        for(float &i : in) i = std::sqrt(std::abs(i));
+
+        for(int i=0, j=0; i<=100; i++){
+
+            while((j+1)*pitch < (i+1)*p) j++;
+
+            float lp = j-1 >= 0 ? in[j-1] : 0.0f;
+            float rp = j < (int)in.size() ? in[j] : 0.0f;
+
+            float l = ((i+1)*p - j*pitch)/pitch;
+            float r = ((j+1)*pitch - (i+1)*p)/pitch;
+
+            out[i] = lp * r + rp * l;
+
+            assert(std::abs(l+r-1) < 1e-5);
+            assert(out[i] >= 0.0f);
+        }
+
+        /*
+        // energy
 
         for(int i=0; i<100; i++){
             for(int j=0; j<(int)in.size(); j++){
                 out[i] += sinc2(((i+1)*p-j*pitch)/pitch) * in[j];
             }
         }
+        */
 
         float sum = 0.0f;
         for(float i : out) sum += i;
@@ -1939,19 +1965,24 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
                 unsigned num = (unsigned)std::ceil(6000.0f / detector.pitch);
 
                 auto freq = math::cos_window_ft(detector.get2(), num);
-                
-                all.push_back({to_energy(freq), detector.pitch});
+                auto e = to_energy(freq);
+
+                float sum = 0.0f;
+                for(auto i : e) sum += i;
+
+                if(sum > 1e-3) all.push_back({e, detector.pitch});
             }
         }
 
         if(all.size() < N) continue;
-        
+
         std::shuffle(all.begin(), all.end(), rng32);
 
         auto label = get_label(f);
 
         for(unsigned i=0; i<N; i++){
             auto out = interpolate_and_normalize(all[i].first, all[i].second);
+            for(float i : out) assert(!std::isnan(i) && !std::isinf(i));
             for(int j=0; j<99; j++) spectrums << out[j] << ',';
             spectrums << out[99] << '\n';
             labels << label << '\n';
@@ -1967,7 +1998,7 @@ int parse_to_csv(std::string directory, std::string output, unsigned N){
 
 int main(){
 
-    std::string directory = "../dataset", output = "../training2";
+    std::string directory = "../dataset", output = "../training1";
     unsigned N = 10;
 
     // std::cin >> directory >> output >> N;
