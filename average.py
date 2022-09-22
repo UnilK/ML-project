@@ -25,7 +25,7 @@ for i in range(5):
 
     [inputs, labels] = np.split(data[i], [100], axis=1)
     
-    y = np.mean(inputs.to_numpy(), axis=0)
+    y = np.mean(inputs.to_numpy(), axis=0)*x*x
     y = np.log10(y.tolist())*10
 
     ax.plot(x, y)
