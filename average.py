@@ -4,7 +4,7 @@ import pandas as pd
 import random
 import math
 
-source = "training_amplitude"
+source = "training_energy"
 
 input_data = pd.read_csv(source + "_input.csv", sep=",")
 label_data = pd.read_csv(source + "_label.csv", sep=",")
@@ -19,13 +19,18 @@ x = [float(x)*60 for x in range(1, 101)]
 
 for i in range(5):
 
+    fig = plt.figure()
+
     [inputs, labels] = np.split(data[i], [100], axis=1)
     
-    Y = inputs.to_numpy()
     y = np.mean(inputs.to_numpy(), axis=0)
+    y = np.log10(y.tolist())*10
 
-    plt.plot(x, y)
-    plt.title(vowels[i])
+    ax = fig.add_subplot()
+    ax.set_ylabel("dB")
+    ax.set_xlabel("Hz")
+    ax.set_title(vowels[i])
+    ax.plot(x, y)
+
     plt.show()
-    
 
