@@ -26,9 +26,13 @@ ax = plt.subplot()
 cmatrix = confusion_matrix(y_validate, y_prediction)
 sns.heatmap(cmatrix, annot=True, fmt='g', ax=ax)
 
-ax.set_xlabel('Predicted labels', fontsize=15)
-ax.set_ylabel('True labels', fontsize=15)
-ax.set_title('Confusion Matrix', fontsize=15)
+vowels = ["a", "e", "i", "o", "u"]
+
+ax.set_xlabel('Predicted labels')
+ax.set_ylabel('True labels')
+ax.set_title('Confusion Matrix')
+ax.xaxis.set_ticklabels(vowels)
+ax.yaxis.set_ticklabels(vowels)
 
 accuracy = accuracy_score(y_validate, y_prediction)
 print(f"Prediction accuracy: {100*accuracy:.2f}%")
