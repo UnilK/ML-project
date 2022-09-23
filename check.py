@@ -3,7 +3,7 @@ import numpy as np
 import random
 import math
 
-source = "training_energy"
+source = "amplitude"
 
 inputf = open(source + "_input.csv").readlines()
 labels = open(source + "_label.csv").readlines()
@@ -16,11 +16,7 @@ X = np.array(x)
 
 for i in samples:
 
-    Y = inputs[i]
-    y = np.array(Y)*X*X
-    y = np.log10(np.maximum(y, 1e-35))*10
-
-    plt.plot(X, y)
+    plt.plot(X, inputs[i])
     plt.title(labels[i])
     plt.show()
 
