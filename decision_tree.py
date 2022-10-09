@@ -46,7 +46,7 @@ display(pd.DataFrame(errors))
 
 # choosing the depth with minimum validation error
 index_min_val_error = np.argmin(val_errors)
-print("Choosing depth ", depth[index_min_val_error], " gives us minimum error with error = ", np.amin(val_errors),
+print("Choosing depth ", depth[index_min_val_error], " gives us minimum validation error with error = ", np.amin(val_errors),
       end='\n')
 
 best_depth = depth[index_min_val_error]
