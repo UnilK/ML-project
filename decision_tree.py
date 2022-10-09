@@ -55,6 +55,7 @@ clf = DecisionTreeClassifier(random_state=0, max_depth=best_depth)
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_val)
 acc = clf.score(X_val, y_pred)
+print("Accuracy:", acc)
 
 # plot the confusion matrix
 confmat = confusion_matrix(y_val, y_pred)
