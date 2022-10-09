@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 from sklearn.tree import export_text, plot_tree, DecisionTreeClassifier, export_graphviz
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, confusion_matrix
+from sklearn.metrics import mean_squared_error, confusion_matrix, accuracy_score
 from sklearn.preprocessing import LabelEncoder
 
 source = "amplitude"
@@ -54,8 +54,11 @@ best_depth = depth[index_min_val_error]
 clf = DecisionTreeClassifier(random_state=0, max_depth=best_depth)
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_val)
-acc = clf.score(X_val, y_pred)
-print("Accuracy:", acc)
+print("The accuracy of the predicted classes", clf.score(X_val, y_pred), end='\n')
+
+# Compute the test accuracy
+acc = accuracy_score(y_val, y_pred)
+print("Test Accuracy:", acc, end='\n')
 
 # plot the confusion matrix
 confmat = confusion_matrix(y_val, y_pred)
