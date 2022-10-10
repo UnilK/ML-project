@@ -1,14 +1,15 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 import seaborn as sns
 from sklearn.neural_network import MLPRegressor
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, mean_squared_error
 from sklearn.model_selection import train_test_split
 from matplotlib.backends.backend_pdf import PdfPages
 
 source = "amplitude"
-
+le = LabelEncoder()
 features = pd.read_csv(source + "_input.csv", sep=",").to_numpy()
 labels = pd.read_csv(source + "_label.csv", sep=",").to_numpy()
 labels = pd.get_dummies(labels.ravel())
@@ -45,3 +46,6 @@ print(f"Prediction accuracy: {100*accuracy:.2f}%")
 
 with PdfPages(r"NN_confusion.pdf") as f:
     f.savefig()
+
+# Output the test error
+print("The test error is ", mean_squared_error(le.fit_transform(y_validate.ravel()), le.fit_transform(y_prediction.ravel())))

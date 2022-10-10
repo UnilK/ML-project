@@ -8,6 +8,7 @@ from sklearn.tree import export_text, plot_tree, DecisionTreeClassifier, export_
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix, accuracy_score
 from sklearn.preprocessing import LabelEncoder
+from matplotlib.backends.backend_pdf import PdfPages
 
 source = "amplitude"
 depth = np.array(range(1, 21))
@@ -46,7 +47,8 @@ display(pd.DataFrame(errors))
 
 # choosing the depth with minimum validation error
 index_min_val_error = np.argmin(val_errors)
-print("Choosing depth ", depth[index_min_val_error], " gives us minimum validation error with error = ", np.amin(val_errors),
+print("Choosing depth ", depth[index_min_val_error], " gives us minimum validation error with error = ",
+      np.amin(val_errors),
       end='\n')
 
 best_depth = depth[index_min_val_error]
@@ -64,9 +66,11 @@ print("Test Accuracy:", acc, end='\n')
 confmat = confusion_matrix(y_val, y_pred)
 ax = plt.subplot()
 sns.heatmap(confmat, annot=True, fmt='g', ax=ax)
-ax.set_xlabel('Predicted labels', fontsize=15)
-ax.set_ylabel('True labels', fontsize=15)
-plt.show()
+ax.set_xlabel('prediction')
+ax.set_ylabel('actual')
+# plt.show()
+with PdfPages(r"decision_tree_confmat.pdf") as f:
+    f.savefig()
 
 # save as pdf for a high res image:
 d_tree = export_graphviz(clf, feature_names=range(60, 6001, 60), filled=True, class_names=["a", "e", "i", "o", "u"])
