@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.8.30)  10 OCT 2022 03:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.8.30)  10 OCT 2022 14:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -805,16 +805,13 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [4] [5 <./logistic_confusion.pdf> <./decision_tree_confmat.pdf> <./NN_confusion
 .pdf>] (./main.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 184B069BD804AAE86DDB3DD6B2CDFE5B;1806.
  ) 
 Here is how much of TeX's memory you used:
  22124 strings out of 478268
  417829 string characters out of 5846347
- 687834 words of memory out of 5000000
+ 687835 words of memory out of 5000000
  39945 multiletter control sequences out of 15000+600000
  475245 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -826,7 +823,7 @@ usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
 r/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/
 local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loc
 al/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (5 pages, 147944 bytes).
+Output written on main.pdf (5 pages, 147918 bytes).
 PDF statistics:
  263 PDF objects out of 1000 (max. 8388607)
  151 compressed objects within 2 object streams
